@@ -2,6 +2,7 @@
 #include <list>
 
 #include "Token.h"
+#include "Lox.h"
 
 class Scanner
 {
@@ -11,6 +12,8 @@ public:
   std::list<Token> scanTokens();
 
 private:
+  // loxcpp::Lox& lox;
+
   std::string source;
   std::list<Token> tokens;
 
@@ -18,7 +21,18 @@ private:
   int current{0};
   int line{1};
 
-  bool isAtEnd() {
+  bool isAtEnd() const {
     return current >= source.length();
   }
+  char advance() {
+    return source.at(current++);
+  }
+  void addToken(TokenType type) {
+    addToken(type, std::monostate{});
+  }
+  void addToken(TokenType type, const std::variant<std::monostate, double, std::string, bool>& literal) {
+    std::string text = source.substr(start, current);
+    tokens.push_back(Token(type, text, literal, line));
+  }
+  void scanToken();
 };

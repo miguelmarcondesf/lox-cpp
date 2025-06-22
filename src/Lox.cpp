@@ -5,88 +5,86 @@
 #include <fstream>
 #include <sstream>
 
-namespace loxcpp
+Lox::Lox() : hadError(false) {}
+
+void static Lox::main(std::vector<std::string> &args)
 {
-  Lox::Lox() : hadError(false) {}
-
-  void Lox::main(std::vector<std::string> &args)
+  if (args.size() > 1)
   {
-    if (args.size() > 1)
-    {
-      std::cout << "Usage: jlox [script]" << std::endl;
-      exit(64); // EX_USAGE
-    }
-    else if (args.size() == 1)
-    {
-      runFile(args[0]);
-    }
-    else
-    {
-      runPrompt();
-    }
+    std::cout << "Usage: jlox [script]" << std::endl;
+    exit(64); // EX_USAGE
+  }
+  else if (args.size() == 1)
+  {
+    runFile(args[0]);
+  }
+  else
+  {
+    runPrompt();
+  }
+}
+
+static void Lox::runFile(const std::string &path)
+{
+  std::ifstream file(path);
+  if (!file.is_open())
+  {
+    std::cerr << "Error: Could not open file " << path << std::endl;
+    exit(74); // EX_IOERR
+    return;
   }
 
-  void Lox::runFile(const std::string &path)
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string content = buffer.str();
+  file.close();
+
+  run(content);
+
+  if (hadError)
+    exit(65); // EX_DATAERR
+}
+
+// "REPL" Read a line of input
+// Evaluate it, Print the result,
+// then Loop and do it all over again
+static void Lox::runPrompt()
+{
+  std::string line;
+
+  for (;;)
   {
-    std::ifstream file(path);
-    if (!file.is_open())
+    std::cout << "> ";
+    std::cout.flush();
+
+    if (!std::getline(std::cin, line))
     {
-      std::cerr << "Error: Could not open file " << path << std::endl;
-      exit(74); // EX_IOERR
-      return;
+      break;
     }
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string content = buffer.str();
-    file.close();
-
-    run(content);
-
-    if (hadError) exit(65); //EX_DATAERR
+    run(line);
+    hadError = false;
   }
+}
 
-  // "REPL" Read a line of input
-  // Evaluate it, Print the result,
-  // then Loop and do it all over again
-  void Lox::runPrompt()
+void Lox::run(std::string &source)
+{
+  Scanner scanner(source);
+  std::vector<Token> tokens = scanner.scanTokens();
+
+  for (const Token &token : tokens)
   {
-    std::string line;
-
-    for (;;)
-    {
-      std::cout << "> ";
-      std::cout.flush();
-
-      if (!std::getline(std::cin, line))
-      {
-        break;
-      }
-
-      run(line);
-      hadError = false;
-    }
+    std::cout << token.toString() << std::endl;
   }
+}
 
-  void Lox::run(std::string &source)
-  {
-    Scanner scanner(source);
-    std::vector<Token> tokens = scanner.scanTokens();
+static void Lox::error(int line, const std::string& message)
+{
+  report(line, "", message);
+}
 
-    for (const Token &token : tokens)
-    {
-      std::cout << token << std::endl;
-    }
-  }
-
-  void Lox::error(const int line, const std::string &message)
-  {
-    report(line, "", message);
-  }
-
-  void Lox::report(const int line, const std::string &where, const std::string &message)
-  {
-    std::cout << "[line " + std::to_string(line) + "] Error" + where + ": " + message << std::endl;
-    hadError = true;
-  }
+static void Lox::report(const int line, const std::string &where, const std::string &message)
+{
+  std::cout << "[line " + std::to_string(line) + "] Error" + where + ": " + message << std::endl;
+  hadError = true;
 }

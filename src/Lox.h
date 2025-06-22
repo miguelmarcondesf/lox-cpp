@@ -2,21 +2,18 @@
 #include <string>
 #include <vector>
 
-namespace loxcpp
+class Lox
 {
-  class Lox
-  {
-  public:
-    Lox();
-    void main(std::vector<std::string> &args);
-    void error(const int line, const std::string &message);
+public:
+  // Lox();
+  static void main(std::vector<std::string>& args);
+  static void error(int line,const std::string& message);
 
-  private:
-    bool hadError;
+private:
+  static bool hadError;
 
-    void runFile(const std::string &path);
-    void runPrompt();
-    void run(std::string &source);
-    void report(const int line, const std::string &where, const std::string &message);
-  };
-} // namespace lox
+  static void runFile(const std::string &path);
+  static void runPrompt();
+  static void run(std::string &source);
+  static void report(const int line, const std::string &where, const std::string &message);
+};
