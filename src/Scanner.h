@@ -1,3 +1,6 @@
+#ifndef SCANNER_H
+#define SCANNER_H
+
 #include <string>
 #include <list>
 
@@ -36,3 +39,5 @@ private:
   }
   void scanToken();
 };
+
+#endif // SCANNER_H
