@@ -77,6 +77,7 @@ void Scanner::scanToken()
     {
       addToken(TokenType::SLASH);
     }
+    break;
   case ' ':
   case '\r':
   case '\t':

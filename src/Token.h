@@ -11,13 +11,14 @@ public:
   Token(TokenType type, const std::string &lexeme, const std::variant<std::monostate, double, std::string, bool> &literal, int line)
       : type(type), lexeme(lexeme), literal(literal), line(line) {}
 
+  // TODO make type private again after improve interpreter reading
+  const TokenType type;
+
   auto toString() const
   {
     return std::to_string(static_cast<int>(type)) + " " + lexeme + " " + std::to_string(literal.index());
   }
-
   private:
-    const TokenType type;
     const std::string lexeme;
     std::variant<std::monostate, double, std::string, bool> literal;
     const int line;

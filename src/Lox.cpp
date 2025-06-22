@@ -1,6 +1,7 @@
 #include "Lox.h"
 #include "Token.h"
 #include "Scanner.h"
+#include "TokenType.h"
 
 #include <iostream>
 #include <fstream>
@@ -74,9 +75,10 @@ void Lox::run(std::string &source)
   Scanner scanner(source);
   std::list<Token> tokens = scanner.scanTokens();
 
-  for (const Token &token : tokens)
+  for (auto token : tokens)
   {
-    std::cout << token.toString() << std::endl;
+    // std::cout << token.toString() << std::endl;
+    std::cout << tokenTypeToString(token.type) << " " << token.toString() << std::endl;
   }
 }
 
