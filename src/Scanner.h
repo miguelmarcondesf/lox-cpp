@@ -15,14 +15,15 @@ public:
   std::list<Token> scanTokens();
 
 private:
-  // loxcpp::Lox& lox;
-
   std::string source;
   std::list<Token> tokens;
 
   int start{0};
   int current{0};
   int line{1};
+
+  void scanToken();
+  bool match(char expected);
 
   bool isAtEnd() const {
     return current >= source.length();
@@ -37,7 +38,6 @@ private:
     std::string text = source.substr(start, current);
     tokens.push_back(Token(type, text, literal, line));
   }
-  void scanToken();
 };
 
 #endif // SCANNER_H

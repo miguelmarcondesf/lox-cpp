@@ -11,14 +11,14 @@ Lox::Lox() {};
 
 void Lox::runScript(int argc, const char *argv[])
 {
-  if (argc > 1)
+  if (argc > 2)
   {
     std::cout << "Usage: jlox [script]" << std::endl;
     exit(64); // EX_USAGE
   }
-  else if (argc == 1)
+  else if (argc == 2)
   {
-    runFile(argv[0]);
+    runFile(argv[1]);
   }
   else
   {
