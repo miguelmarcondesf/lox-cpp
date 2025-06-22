@@ -86,7 +86,6 @@ void Scanner::scanToken()
   case '\n':
     line++;
     break;
-    break;
   case '"':
     string();
     break;
