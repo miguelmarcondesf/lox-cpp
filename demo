@@ -1,1 +1,11 @@
 var myVar = "Hello World!";
+var number = 0 + 1;
+var floatNumber = 1.5;
+var booleanValue = true;
+var nullValue = null;
+var undefinedValue;
+var objectValue = { key: "value" };
+var arrayValue = [1, 2, 3, 4, 5];
+var functionValue = fun() {
+  return "This is a function";
+};
