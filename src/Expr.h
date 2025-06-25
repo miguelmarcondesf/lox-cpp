@@ -6,76 +6,80 @@
 #include <string>
 #include "Token.h"
 
-class Binary;
-class Grouping;
-class Literal;
-class Unary;
+template<typename R> class Binary;
+template<typename R> class Grouping;
+template<typename R> class Literal;
+template<typename R> class Unary;
 
+template<typename R>
 class ExprVisitor {
-  public:
+public:
     virtual ~ExprVisitor() = default;
 
-    virtual std::string visitBinaryExpr(Binary* expr) = 0;
-    virtual std::string visitGroupingExpr(Grouping* expr) = 0;
-    virtual std::string visitLiteralExpr(Literal* expr) = 0;
-    virtual std::string visitUnaryExpr(Unary* expr) = 0;
+    virtual R visitBinaryExpr(Binary<R>* expr) = 0;
+    virtual R visitGroupingExpr(Grouping<R>* expr) = 0;
+    virtual R visitLiteralExpr(Literal<R>* expr) = 0;
+    virtual R visitUnaryExpr(Unary<R>* expr) = 0;
 };
 
+template<typename R>
 class Expr {
 public:
     virtual ~Expr() = default;
-
-    virtual std::string accept(ExprVisitor* visitor) = 0;
+    virtual R accept(ExprVisitor<R>* visitor) = 0;
 };
 
-// Expr::Binary
-class Binary : public Expr {
+template<typename R>
+class Binary : public Expr<R> {
 public:
-    Binary(std::shared_ptr<Expr> left, const Token& op, std::shared_ptr<Expr> right)
-        : left(left), op(op), right(right) {}
+    Binary(std::shared_ptr<Expr<R>> left, const Token& op, std::shared_ptr<Expr<R>> right)
+        : left(std::move(left)), op(op), right(std::move(right)) {}
 
-    std::shared_ptr<Expr> left;
+    std::shared_ptr<Expr<R>> left;
     Token op;
-    std::shared_ptr<Expr> right;
+    std::shared_ptr<Expr<R>> right;
 
-    std::string accept(ExprVisitor* visitor) override {
+    R accept(ExprVisitor<R>* visitor) override {
         return visitor->visitBinaryExpr(this);
     }
 };
 
-class Grouping : public Expr {
+template<typename R>
+class Grouping : public Expr<R> {
 public:
-    Grouping(std::shared_ptr<Expr> expression)
-        : expression(expression) {}
+    Grouping(std::shared_ptr<Expr<R>> expression)
+        : expression(std::move(expression)) {}
 
-    std::shared_ptr<Expr> expression;
+    std::shared_ptr<Expr<R>> expression;
 
-    std::string accept(ExprVisitor* visitor) override {
+    R accept(ExprVisitor<R>* visitor) override {
         return visitor->visitGroupingExpr(this);
     }
 };
 
-class Literal : public Expr {
+template<typename R>
+class Literal : public Expr<R> {
 public:
     Literal(const std::variant<std::monostate, double, std::string, bool>& value)
         : value(value) {}
 
     std::variant<std::monostate, double, std::string, bool> value;
 
-    std::string accept(ExprVisitor* visitor) override {
+    R accept(ExprVisitor<R>* visitor) override {
         return visitor->visitLiteralExpr(this);
     }
 };
 
-class Unary : public Expr {
+template<typename R>
+class Unary : public Expr<R> {
 public:
-    Unary(const Token& op, std::shared_ptr<Expr> right)
-        : op(op), right(right) {}
+    Unary(const Token& op, std::shared_ptr<Expr<R>> right)
+        : op(op), right(std::move(right)) {}
 
     Token op;
-    std::shared_ptr<Expr> right;
+    std::shared_ptr<Expr<R>> right;
 
-    std::string accept(ExprVisitor* visitor) override {
+    R accept(ExprVisitor<R>* visitor) override {
         return visitor->visitUnaryExpr(this);
     }
 };
