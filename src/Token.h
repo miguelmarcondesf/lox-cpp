@@ -18,6 +18,10 @@ public:
   {
     return std::to_string(static_cast<int>(type)) + " " + lexeme + " " + std::to_string(literal.index());
   }
+
+  const std::string& getLexeme() const {
+    return lexeme;
+  }
   private:
     const std::string lexeme;
     std::variant<std::monostate, double, std::string, bool> literal;
